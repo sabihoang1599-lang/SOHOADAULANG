@@ -473,8 +473,7 @@
   }
 
   document.addEventListener("DOMContentLoaded", init);
-})();
-  async function loadAreaContent(areaId) {
+})();  async function loadAreaContent(areaId) {
     if (!state.supabase || !areaId) {
       renderEmpty("communityAnnouncements", "Chọn khu vực để xem thông báo.");
       renderEmpty("communityContacts", "Chọn khu vực để xem thông tin liên hệ.");
@@ -726,8 +725,7 @@
 
       message(
         "authMessage",
-        "T
-          function friendlyAuthError(error) {
+        "T  function friendlyAuthError(error) {
     const text = String(error?.message || "").toLowerCase();
 
     if (text.includes("invalid login credentials")) {
