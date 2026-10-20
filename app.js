@@ -474,3 +474,308 @@
 
   document.addEventListener("DOMContentLoaded", init);
 })();
+  async function loadAreaContent(areaId) {
+    if (!state.supabase || !areaId) {
+      renderEmpty("communityAnnouncements", "Chọn khu vực để xem thông báo.");
+      renderEmpty("communityContacts", "Chọn khu vực để xem thông tin liên hệ.");
+      return;
+    }
+
+    renderEmpty("communityAnnouncements", "Đang tải thông báo...");
+
+    try {
+      const { data, error } = await state.supabase
+        .from("announcements")
+        .select("id,title,body,category,created_at")
+        .eq("area_id", areaId)
+        .eq("is_published", true)
+        .order("created_at", { ascending: false })
+        .limit(30);
+
+      if (error) throw error;
+      renderAnnouncements(data || []);
+    } catch (error) {
+      renderEmpty(
+        "communityAnnouncements",
+        `Không tải được thông báo. Kiểm tra cấu trúc bảng và quyền truy cập. (${error.message || "Lỗi truy vấn"})`
+      );
+    }
+
+    await loadContacts(areaId);
+  }
+
+  async function loadContacts(areaId) {
+    const container = $("communityContacts");
+    if (!container) return;
+
+    if (!state.supabase) {
+      renderEmpty("communityContacts", "Chưa kết nối cơ sở dữ liệu.");
+      return;
+    }
+
+    try {
+      const { data, error } = await state.supabase
+        .from("contacts")
+        .select("*")
+        .eq("area_id", areaId)
+        .limit(30);
+
+      if (error) throw error;
+
+      container.replaceChildren();
+
+      if (!data?.length) {
+        renderEmpty(
+          "communityContacts",
+          "Chưa có thông tin liên hệ công khai cho khu vực này."
+        );
+        return;
+      }
+
+      data.forEach((item) => {
+        const title =
+          item.name ||
+          item.title ||
+          item.contact_name ||
+          "Đầu mối liên hệ";
+
+        const details = [
+          item.position,
+          item.phone,
+          item.email,
+          item.address,
+          item.description
+        ].filter(Boolean).join("\n");
+
+        container.appendChild(
+          card(
+            title,
+            details || "Liên hệ địa phương",
+            item.category || ""
+          )
+        );
+      });
+    } catch (error) {
+      renderEmpty(
+        "communityContacts",
+        `Không tải được liên hệ. Kiểm tra bảng contacts và quyền truy cập. (${error.message || "Lỗi truy vấn"})`
+      );
+    }
+  }
+
+  function setCurrentArea(areaId) {
+    state.areaId = areaId || null;
+
+    const area = state.allAreas.find(
+      (item) => String(item.id) === String(areaId)
+    );
+
+    if ($("userArea")) {
+      $("userArea").textContent = area
+        ? area.name
+        : "Chưa chọn khu vực";
+    }
+
+    const areaSelect = $("areaSelect");
+
+    if (areaSelect) {
+      areaSelect.replaceChildren();
+
+      const option = document.createElement("option");
+      option.value = areaId || "";
+      option.textContent = area
+        ? area.name
+        : "Chưa chọn khu vực";
+
+      areaSelect.appendChild(option);
+    }
+
+    if ($("dashboardSubtitle")) {
+      $("dashboardSubtitle").textContent = area
+        ? `Thông tin khu vực: ${area.name}`
+        : "Cùng xây dựng cộng đồng văn minh, đoàn kết.";
+    }
+
+    void loadAreaContent(areaId);
+  }
+
+  async function enterCommunity(areaId) {
+    const area = state.allAreas.find(
+      (item) => String(item.id) === String(areaId)
+    );
+
+    if (!area) {
+      message(
+        "areaSetupMessage",
+        "Vui lòng chọn đầy đủ địa phương.",
+        true
+      );
+      return;
+    }
+
+    state.mode = "community";
+
+    if ($("dashboardTitle")) {
+      $("dashboardTitle").textContent = "Cộng đồng địa phương";
+    }
+
+    if ($("workspaceLabel")) {
+      $("workspaceLabel").textContent = "KHÔNG GIAN CỘNG ĐỒNG";
+    }
+
+    if ($("userName")) {
+      $("userName").textContent = state.user
+        ? (
+            state.profile?.full_name ||
+            state.user.email ||
+            "Người dùng"
+          )
+        : "Khách cộng đồng";
+    }
+
+    if ($("userEmail")) {
+      $("userEmail").textContent =
+        state.user?.email || "Chưa đăng nhập";
+    }
+
+    if ($("userRole")) {
+      $("userRole").textContent = state.user
+        ? (
+            state.profile?.global_role ||
+            "Tài khoản đã đăng nhập"
+          )
+        : "Khách cộng đồng";
+    }
+
+    $("logoutBtn")?.classList.toggle(
+      "hidden",
+      !state.user
+    );
+
+    document.querySelectorAll(".party-only").forEach((el) => {
+      el.classList.add("hidden");
+    });
+
+    showView("appView");
+    showAppTab("community");
+    setCurrentArea(areaId);
+  }
+
+  async function loadProfile() {
+    if (!state.supabase || !state.user) {
+      state.profile = null;
+      return;
+    }
+
+    try {
+      const { data, error } = await state.supabase
+        .from("profiles")
+        .select("full_name,global_role")
+        .eq("id", state.user.id)
+        .maybeSingle();
+
+      if (error) throw error;
+
+      state.profile = data || null;
+    } catch (error) {
+      state.profile = null;
+      console.error(
+        "Không đọc được profiles:",
+        error.message
+      );
+    }
+
+    if ($("userName")) {
+      $("userName").textContent =
+        state.profile?.full_name ||
+        state.user.email ||
+        "Người dùng";
+    }
+
+    if ($("userEmail")) {
+      $("userEmail").textContent =
+        state.user.email || "";
+    }
+
+    if ($("userRole")) {
+      $("userRole").textContent =
+        state.profile?.global_role ||
+        "Chưa được phân quyền";
+    }
+
+    document.querySelectorAll(".party-only").forEach((el) => {
+      el.classList.toggle(
+        "hidden",
+        !isPartyMember()
+      );
+    });
+  }
+
+  async function openPartyApp() {
+    if (!state.user) {
+      state.mode = "party";
+      setAuthMode("login");
+      showView("authView");
+      return;
+    }
+
+    await loadProfile();
+
+    if (!isPartyMember()) {
+      showView("authView");
+
+      message(
+        "authMessage",
+        "T
+          function friendlyAuthError(error) {
+    const text = String(error?.message || "").toLowerCase();
+
+    if (text.includes("invalid login credentials")) {
+      return "Email hoặc mật khẩu không chính xác.";
+    }
+
+    if (text.includes("email not confirmed")) {
+      return "Email chưa được xác nhận. Hãy kiểm tra hộp thư của bạn.";
+    }
+
+    if (text.includes("user already registered")) {
+      return "Email này đã được đăng ký. Hãy đăng nhập.";
+    }
+
+    if (text.includes("password should be at least")) {
+      return "Mật khẩu chưa đủ độ dài theo yêu cầu.";
+    }
+
+    if (text.includes("failed to fetch")) {
+      return "Không kết nối được máy chủ. Hãy kiểm tra Internet và cấu hình Supabase.";
+    }
+
+    return error?.message || "Đã xảy ra lỗi. Vui lòng thử lại.";
+  }
+
+  async function sendPasswordReset() {
+    if (!state.supabase) {
+      message(
+        "authMessage",
+        "Chưa kết nối Supabase.",
+        true
+      );
+      return;
+    }
+
+    const email = $("email")?.value.trim() || "";
+
+    if (!email) {
+      message(
+        "authMessage",
+        "Vui lòng nhập email trước khi khôi phục mật khẩu.",
+        true
+      );
+      return;
+    }
+
+    try {
+      const { error } =
+        await state.supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: window.location.origin +
+            window.location
