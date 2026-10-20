@@ -2,488 +2,150 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#14532d">
-  <meta name="description" content="Số Hóa Đầu Làng - Kết nối cộng đồng dân cư với chi bộ và cán bộ địa phương.">
-
+  <meta name="description" content="Số Hóa Đầu Làng - Kết nối người dân và địa phương.">
   <title>Số Hóa Đầu Làng</title>
-
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
   <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-
-  <!-- THANH TIÊU ĐỀ -->
   <header class="topbar">
-    <div class="brand-mark">🏡</div>
-
-    <div class="brand-info">
-      <h1>Số Hóa Đầu Làng</h1>
-      <p>Kết nối cộng đồng - Phục vụ nhân dân</p>
-    </div>
-
-    <button id="logoutBtn" class="button button-outline hidden" type="button">
-      Đăng xuất
-    </button>
+    <div class="brand-mark" aria-hidden="true">🏡</div>
+    <div><h1>Số Hóa Đầu Làng</h1><p>Kết nối cộng đồng - Phục vụ nhân dân</p></div>
+    <button id="logoutBtn" class="button button-outline hidden" type="button">Đăng xuất</button>
   </header>
 
   <main class="container">
-
-    <!-- THÔNG BÁO CẤU HÌNH -->
-    <div id="setupNotice" class="notice notice-warning hidden">
-      <strong>Chưa kết nối cơ sở dữ liệu.</strong>
-      <p>Vui lòng kiểm tra cấu hình Supabase trong file config.js.</p>
+    <div id="setupNotice" class="notice notice-warning hidden" role="status">
+      <strong>Chưa kết nối Supabase.</strong>
+      <p>Kiểm tra SUPABASE_URL và SUPABASE_PUBLISHABLE_KEY trong config.js.</p>
     </div>
+    <div id="globalMessage" class="message" role="status" aria-live="polite"></div>
 
-    <!-- MÀN HÌNH 1: CHỌN VAI TRÒ -->
-    <section id="roleView" class="role-view">
-
+    <!-- Chọn vai trò -->
+    <section id="roleView">
       <div class="welcome-card">
         <span class="eyebrow">CỘNG ĐỒNG SỐ</span>
-
-        <h2>Chào mừng bạn đến với Số Hóa Đầu Làng</h2>
-
-        <p>
-          Nơi kết nối người dân, cộng đồng dân cư,
-          chi bộ và cán bộ địa phương trên cùng một nền tảng.
-        </p>
-
-        <div class="feature-pills">
-          <span>🏘️ Cộng đồng</span>
-          <span>📢 Thông báo</span>
-          <span>🤝 Kết nối</span>
-        </div>
+        <h2>Chào mừng đến với Số Hóa Đầu Làng</h2>
+        <p>Nơi kết nối người dân, cộng đồng dân cư, chi bộ và cán bộ địa phương trên cùng một nền tảng.</p>
+        <div class="feature-pills"><span>🏘️ Cộng đồng</span><span>📢 Thông báo</span><span>🤝 Kết nối</span></div>
       </div>
-
-      <div class="section-heading role-heading">
-        <h2>Chọn vai trò sử dụng</h2>
-        <p>Vui lòng chọn khu vực chức năng phù hợp với bạn.</p>
-      </div>
-
+      <div class="section-heading role-heading"><h2>Chọn vai trò sử dụng</h2><p>Chọn khu vực chức năng phù hợp với bạn.</p></div>
       <div class="role-grid">
-
-        <button id="choosePartyBtn" class="role-card" type="button">
-          <span class="role-icon">🏛️</span>
-          <span class="role-title">CHI BỘ</span>
-          <span class="role-description">
-            Dành cho cán bộ, đảng viên được cấp tài khoản.
-          </span>
-          <span class="role-action">Đăng nhập →</span>
-        </button>
-
-        <button id="chooseCommunityBtn" class="role-card" type="button">
-          <span class="role-icon">🏘️</span>
-          <span class="role-title">CỘNG ĐỒNG</span>
-          <span class="role-description">
-            Dành cho người dân tra cứu thông tin địa phương.
-          </span>
-          <span class="role-action">Vào cộng đồng →</span>
-        </button>
-
+        <button id="choosePartyBtn" class="role-card" type="button"><span class="role-icon">🏛️</span><span class="role-title">CHI BỘ</span><span class="role-description">Dành cho cán bộ, đảng viên được cấp tài khoản.</span><span class="role-action">Đăng nhập →</span></button>
+        <button id="chooseCommunityBtn" class="role-card" type="button"><span class="role-icon">🏘️</span><span class="role-title">CỘNG ĐỒNG</span><span class="role-description">Tra cứu thông tin địa phương không bắt buộc đăng ký.</span><span class="role-action">Vào cộng đồng →</span></button>
       </div>
-
     </section>
 
-    <!-- MÀN HÌNH 2: ĐĂNG NHẬP CHI BỘ -->
+    <!-- Đăng nhập chi bộ -->
     <section id="authView" class="auth-layout hidden">
-
       <div class="welcome-card">
-        <span class="eyebrow">KHU VỰC CHI BỘ</span>
-
-        <h2>Kết nối và điều hành công việc</h2>
-
-        <p>
-          Hỗ trợ quản lý thông báo, tài liệu,
-          nhiệm vụ và hoạt động của chi bộ.
-        </p>
-
-        <button id="backToRoleFromAuth"
-                class="button button-secondary"
-                type="button">
-          ← Quay lại chọn vai trò
-        </button>
+        <span class="eyebrow">KHU VỰC CHI BỘ</span><h2>Kết nối và điều hành công việc</h2>
+        <p>Truy cập chức năng nội bộ bằng tài khoản được cấp quyền.</p>
+        <button id="backToRoleFromAuth" class="button button-secondary" type="button">← Quay lại chọn vai trò</button>
       </div>
-
       <div class="panel auth-panel">
-
-        <div class="section-heading">
-          <h2>Đăng nhập</h2>
-          <p class="muted">Sử dụng tài khoản được cấp.</p>
+        <div class="section-heading"><h2 id="authHeading">Đăng nhập Chi bộ</h2><p class="muted">Sử dụng tài khoản được cấp.</p></div>
+        <div class="tab-switch">
+          <button id="loginTab" class="switch active" type="button">Đăng nhập</button>
+          <button id="signupTab" class="switch" type="button">Đăng ký</button>
         </div>
-
-        <div id="authTabs" class="tab-switch">
-          <button id="loginTab"
-                  class="switch active"
-                  type="button">
-            Đăng nhập
-          </button>
-
-          <button id="signupTab"
-                  class="switch"
-                  type="button">
-            Đăng ký
-          </button>
-        </div>
-
         <form id="authForm">
-
-          <div id="fullNameField" class="hidden">
-            <label for="fullName">Họ và tên</label>
-            <input
-              id="fullName"
-              name="fullName"
-              type="text"
-              autocomplete="name"
-              placeholder="Nhập họ và tên">
-          </div>
-
-          <label for="email">Email</label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            autocomplete="username"
-            placeholder="Nhập địa chỉ email"
-            required>
-
-          <label for="password">Mật khẩu</label>
-          <input
-            id="password"
-            name="password"
-            type="password"
-            autocomplete="current-password"
-            placeholder="Nhập mật khẩu"
-            required
-            minlength="6">
-
-          <button id="authSubmitBtn"
-                  class="button button-primary full-width"
-                  type="submit">
-            Đăng nhập
-          </button>
-
+          <div id="fullNameField" class="hidden"><label for="fullName">Họ và tên</label><input id="fullName" name="fullName" autocomplete="name" maxlength="120" placeholder="Nhập họ và tên"></div>
+          <label for="email">Email</label><input id="email" name="email" type="email" autocomplete="username" required placeholder="name@example.com">
+          <label for="password">Mật khẩu</label><input id="password" name="password" type="password" autocomplete="current-password" minlength="6" required placeholder="Ít nhất 6 ký tự">
+          <button id="authSubmitBtn" class="button button-primary full-width" type="submit">Đăng nhập</button>
           <p id="authMessage" class="message" aria-live="polite"></p>
-
         </form>
-
-        <button id="forgotPasswordBtn"
-                class="text-button"
-                type="button">
-          Quên mật khẩu?
-        </button>
-
-        <p class="small muted">
-          Đăng ký tài khoản không đồng nghĩa với việc được cấp quyền quản trị.
-        </p>
-
+        <button id="forgotPasswordBtn" class="text-button" type="button">Quên mật khẩu?</button>
+        <p class="small muted">Tạo tài khoản không tự động cấp quyền quản trị Chi bộ. Quyền phải được quản lý trong cơ sở dữ liệu.</p>
       </div>
-
     </section>
 
-    <!-- MÀN HÌNH 3: CHỌN KHU VỰC CỘNG ĐỒNG -->
+    <!-- Chọn địa phương -->
     <section id="communitySetupView" class="panel hidden">
-
-      <div class="section-heading">
-        <span class="eyebrow">KHU VỰC CỘNG ĐỒNG</span>
-        <h2>Chọn địa phương của bạn</h2>
-        <p class="muted">
-          Chọn đúng địa phương để xem thông tin phù hợp.
-          Bạn không cần đăng ký tài khoản để tra cứu thông tin công khai.
-        </p>
-      </div>
-
+      <div class="section-heading"><span class="eyebrow">KHU VỰC CỘNG ĐỒNG</span><h2>Chọn địa phương của bạn</h2><p class="muted">Chọn địa phương để xem tin tức công khai. Không cần đăng ký tài khoản.</p></div>
       <form id="areaSetupForm">
-
-        <label for="provinceSelect">Tỉnh / thành phố</label>
-        <select id="provinceSelect" required>
-          <option value="">Đang tải danh sách địa phương...</option>
-        </select>
-
-        <label for="wardSelect">Phường / xã</label>
-        <select id="wardSelect" required disabled>
-          <option value="">Vui lòng chọn tỉnh / thành phố trước</option>
-        </select>
-
-        <label for="communityAreaSelect">Khu vực / thôn / tổ dân phố</label>
-        <select id="communityAreaSelect" required disabled>
-          <option value="">Vui lòng chọn phường / xã trước</option>
-        </select>
-
+        <label for="provinceSelect">Tỉnh / thành phố</label><select id="provinceSelect" required><option value="">Đang tải danh sách...</option></select>
+        <label for="wardSelect">Phường / xã</label><select id="wardSelect" required disabled><option value="">Chọn tỉnh / thành phố trước</option></select>
+        <label for="communityAreaSelect">Khu vực / thôn / tổ dân phố</label><select id="communityAreaSelect" required disabled><option value="">Chọn phường / xã trước</option></select>
         <p id="areaSetupMessage" class="message" aria-live="polite"></p>
-
-        <button id="enterCommunityBtn"
-                class="button button-primary full-width"
-                type="submit">
-          Vào cộng đồng →
-        </button>
-
+        <button id="enterCommunityBtn" class="button button-primary full-width" type="submit">Vào cộng đồng →</button>
       </form>
-
-      <button id="backToRoleFromCommunity"
-              class="button button-outline full-width"
-              type="button">
-        ← Quay lại chọn vai trò
-      </button>
-
+      <button id="backToRoleFromCommunity" class="button button-outline full-width" type="button">← Quay lại chọn vai trò</button>
     </section>
 
-    <!-- MÀN HÌNH 4: ỨNG DỤNG CHÍNH -->
+    <!-- Ứng dụng -->
     <section id="appView" class="hidden">
-
       <div class="dashboard-heading">
-
-        <div>
-          <span class="eyebrow">KHÔNG GIAN CỘNG ĐỒNG</span>
-          <h2 id="dashboardTitle">Xin chào!</h2>
-          <p id="dashboardSubtitle" class="muted">
-            Cùng xây dựng cộng đồng văn minh, đoàn kết.
-          </p>
-        </div>
-
-        <div class="area-box">
-          <label for="areaSelect">Khu vực đang xem</label>
-          <select id="areaSelect">
-            <option value="">Chưa chọn khu vực</option>
-          </select>
-        </div>
-
+        <div><span class="eyebrow" id="workspaceLabel">KHÔNG GIAN CỘNG ĐỒNG</span><h2 id="dashboardTitle">Xin chào!</h2><p id="dashboardSubtitle" class="muted">Cùng xây dựng cộng đồng văn minh, đoàn kết.</p></div>
+        <div class="area-box"><label for="areaSelect">Khu vực đang xem</label><select id="areaSelect"><option value="">Chưa chọn khu vực</option></select></div>
       </div>
-
-      <!-- MENU CHỨC NĂNG -->
       <nav id="mainTabs" class="main-tabs" aria-label="Menu chính">
-
-        <button class="main-tab active"
-                data-view="community"
-                type="button">
-          📰 Tin tức
-        </button>
-
-        <button class="main-tab"
-                data-view="activities"
-                type="button">
-          🤝 Hoạt động
-        </button>
-
-        <button class="main-tab"
-                data-view="feedback"
-                type="button">
-          📣 Phản ánh
-        </button>
-
-        <button class="main-tab"
-                data-view="contacts"
-                type="button">
-          📞 Liên hệ
-        </button>
-
-        <button class="main-tab"
-                data-view="party"
-                type="button">
-          🏛️ Chi bộ
-        </button>
-
-        <button class="main-tab"
-                data-view="account"
-                type="button">
-          👤 Tài khoản
-        </button>
-
+        <button class="main-tab active" data-view="community" type="button">📰 Tin tức</button>
+        <button class="main-tab" data-view="activities" type="button">🤝 Hoạt động</button>
+        <button class="main-tab" data-view="feedback" type="button">📣 Phản ánh</button>
+        <button class="main-tab" data-view="contacts" type="button">📞 Liên hệ</button>
+        <button class="main-tab party-only hidden" data-view="party" type="button">🏛️ Chi bộ</button>
+        <button class="main-tab" data-view="account" type="button">👤 Tài khoản</button>
       </nav>
 
-      <!-- TAB TIN TỨC -->
       <section id="communityView" class="app-section">
-
-        <div class="section-heading">
-          <h2>📢 Tin tức và thông báo</h2>
-          <p class="muted">
-            Thông tin được công bố tại địa phương.
-          </p>
-        </div>
-
-        <div id="communityAnnouncements" class="card-grid">
-          <div class="info-card">
-            <p>Đang tải thông báo...</p>
-          </div>
-        </div>
-
+        <div class="section-heading"><h2>📢 Tin tức và thông báo</h2><p class="muted">Thông tin công khai tại địa phương.</p></div>
+        <div id="communityAnnouncements" class="card-grid"><div class="info-card"><p>Đang tải thông báo...</p></div></div>
       </section>
 
-      <!-- TAB HOẠT ĐỘNG -->
       <section id="activitiesView" class="app-section hidden">
-
-        <div class="section-heading">
-          <h2>🤝 Hoạt động cộng đồng</h2>
-          <p class="muted">
-            Theo dõi các hoạt động và chương trình tại địa phương.
-          </p>
-        </div>
-
-        <div id="communityActivities" class="card-grid">
-          <div class="info-card">
-            <h3>Hoạt động địa phương</h3>
-            <p>Thông tin sẽ hiển thị khi có dữ liệu được đăng tải.</p>
-          </div>
-        </div>
-
+        <div class="section-heading"><h2>🤝 Hoạt động cộng đồng</h2><p class="muted">Các hoạt động được đăng tải tại địa phương.</p></div>
+        <div id="communityActivities" class="card-grid"><div class="info-card"><h3>Hoạt động cộng đồng</h3><p>Chưa có dữ liệu hoạt động hoặc chưa kết nối bảng dữ liệu tương ứng.</p></div></div>
       </section>
 
-      <!-- TAB PHẢN ÁNH -->
       <section id="feedbackView" class="app-section hidden">
-
-        <div class="section-heading">
-          <h2>📣 Phản ánh và kiến nghị</h2>
-          <p class="muted">
-            Gửi ý kiến đóng góp về các vấn đề tại địa phương.
-          </p>
-        </div>
-
+        <div class="section-heading"><h2>📣 Phản ánh và kiến nghị</h2><p class="muted">Không gửi thông tin khẩn cấp qua biểu mẫu này.</p></div>
         <div class="panel">
-
           <form id="feedbackForm">
-
-            <label for="feedbackCategory">Nội dung phản ánh</label>
-            <select id="feedbackCategory" required>
-              <option value="">Chọn loại phản ánh</option>
-              <option value="environment">Môi trường</option>
-              <option value="security">An ninh trật tự</option>
-              <option value="infrastructure">Đường sá, cơ sở hạ tầng</option>
-              <option value="community">Hoạt động cộng đồng</option>
-              <option value="other">Nội dung khác</option>
-            </select>
-
-            <label for="feedbackContent">Chi tiết phản ánh</label>
-            <textarea
-              id="feedbackContent"
-              rows="5"
-              required
-              maxlength="3000"
-              placeholder="Mô tả nội dung bạn muốn phản ánh..."></textarea>
-
-            <label for="feedbackContact">Thông tin liên hệ (không bắt buộc)</label>
-            <input
-              id="feedbackContact"
-              type="text"
-              maxlength="150"
-              placeholder="Số điện thoại hoặc email nếu muốn được liên hệ">
-
+            <label for="feedbackCategory">Loại phản ánh</label>
+            <select id="feedbackCategory" required><option value="">Chọn loại phản ánh</option><option value="environment">Môi trường</option><option value="security">An ninh trật tự</option><option value="infrastructure">Đường sá, cơ sở hạ tầng</option><option value="community">Hoạt động cộng đồng</option><option value="other">Nội dung khác</option></select>
+            <label for="feedbackContent">Nội dung chi tiết</label><textarea id="feedbackContent" rows="5" maxlength="3000" required placeholder="Mô tả vấn đề bạn muốn phản ánh..."></textarea>
+            <label for="feedbackContact">Thông tin liên hệ (không bắt buộc)</label><input id="feedbackContact" maxlength="150" placeholder="Email hoặc số điện thoại">
             <p id="feedbackMessage" class="message" aria-live="polite"></p>
-
-            <button class="button button-primary full-width" type="submit">
-              Gửi phản ánh
-            </button>
-
+            <button class="button button-primary full-width" type="submit">Gửi phản ánh</button>
           </form>
-
-          <p class="small muted">
-            Chỉ thông báo thành công khi hệ thống xác nhận đã tiếp nhận.
-            Không nhập thông tin cá nhân nhạy cảm nếu không cần thiết.
-          </p>
-
+          <p class="small muted">Chỉ nhập thông tin cần thiết. Không hiển thị công khai thông tin liên hệ của bạn.</p>
         </div>
-
       </section>
 
-      <!-- TAB LIÊN HỆ -->
       <section id="contactsView" class="app-section hidden">
-
-        <div class="section-heading">
-          <h2>📞 Thông tin liên hệ</h2>
-          <p class="muted">
-            Thông tin liên hệ của địa phương và các đầu mối hỗ trợ.
-          </p>
-        </div>
-
-        <div id="communityContacts" class="card-grid">
-          <div class="info-card">
-            <h3>Thông tin địa phương</h3>
-            <p>Thông tin liên hệ sẽ được hiển thị khi có dữ liệu.</p>
-          </div>
-        </div>
-
+        <div class="section-heading"><h2>📞 Thông tin liên hệ</h2><p class="muted">Các đầu mối hỗ trợ tại địa phương.</p></div>
+        <div id="communityContacts" class="card-grid"><div class="info-card"><p>Chưa có thông tin liên hệ được đăng tải.</p></div></div>
       </section>
 
-      <!-- TAB CHI BỘ -->
       <section id="partyView" class="app-section hidden">
-
-        <div class="section-heading">
-          <h2>🏛️ Khu vực Chi bộ</h2>
-          <p class="muted">
-            Chức năng dành cho tài khoản được cấp quyền phù hợp.
-          </p>
-        </div>
-
-        <div id="partyContent" class="card-grid">
-
-          <div class="info-card">
-            <span class="card-icon">📅</span>
-            <h3>Lịch họp</h3>
-            <p>Theo dõi lịch sinh hoạt và các cuộc họp.</p>
-          </div>
-
-          <div class="info-card">
-            <span class="card-icon">📁</span>
-            <h3>Tài liệu</h3>
-            <p>Tra cứu tài liệu được phép truy cập.</p>
-          </div>
-
-          <div class="info-card">
-            <span class="card-icon">✅</span>
-            <h3>Nhiệm vụ</h3>
-            <p>Theo dõi nhiệm vụ và tiến độ thực hiện.</p>
-          </div>
-
-        </div>
-
+        <div class="section-heading"><h2>🏛️ Khu vực Chi bộ</h2><p class="muted">Chỉ tài khoản được cấp quyền mới truy cập được dữ liệu nội bộ.</p></div>
+        <div id="partyContent" class="card-grid"><div class="info-card"><span class="card-icon">📅</span><h3>Nhiệm vụ và tài liệu</h3><p>Chức năng sẽ hiển thị theo quyền và dữ liệu đã cấu hình.</p></div></div>
       </section>
 
-      <!-- TAB TÀI KHOẢN -->
       <section id="accountView" class="app-section hidden">
-
-        <div class="section-heading">
-          <h2>👤 Tài khoản</h2>
-          <p class="muted">Thông tin phiên sử dụng hiện tại.</p>
-        </div>
-
+        <div class="section-heading"><h2>👤 Tài khoản / phiên sử dụng</h2></div>
         <div class="panel account-panel">
-
-          <div class="account-row">
-            <strong>Họ và tên</strong>
-            <span id="userName">Khách cộng đồng</span>
-          </div>
-
-          <div class="account-row">
-            <strong>Email</strong>
-            <span id="userEmail">Chưa đăng nhập</span>
-          </div>
-
-          <div class="account-row">
-            <strong>Vai trò</strong>
-            <span id="userRole">Cộng đồng</span>
-          </div>
-
-          <div class="account-row">
-            <strong>Khu vực</strong>
-            <span id="userArea">Chưa chọn khu vực</span>
-          </div>
-
-          <button id="resetPasswordBtn"
-                  class="button button-outline full-width"
-                  type="button">
-            Đổi / đặt lại mật khẩu
-          </button>
-
-          <button id="returnRoleBtn"
-                  class="button button-secondary full-width"
-                  type="button">
-            ← Về màn hình chọn vai trò
-          </button>
-
+          <div class="account-row"><strong>Họ và tên</strong><span id="userName">Khách cộng đồng</span></div>
+          <div class="account-row"><strong>Email</strong><span id="userEmail">Chưa đăng nhập</span></div>
+          <div class="account-row"><strong>Vai trò</strong><span id="userRole">Cộng đồng</span></div>
+          <div class="account-row"><strong>Khu vực</strong><span id="userArea">Chưa chọn khu vực</span></div>
+          <button id="resetPasswordBtn" class="button button-outline full-width" type="button">Gửi email đặt lại mật khẩu</button>
+          <button id="returnRoleBtn" class="button button-secondary full-width" type="button">← Về màn hình chọn vai trò</button>
           <p id="accountMessage" class="message" aria-live="polite"></p>
+        </div>
+      </section>
+    </section>
+  </main>
 
-        </
+  <footer class="container"><span>© 2026 Số Hóa Đầu Làng</span><span>Kết nối cộng đồng - Chung tay phát triển địa phương</span></footer>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
